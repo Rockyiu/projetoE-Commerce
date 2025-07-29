@@ -1,0 +1,116 @@
+{% load static %}
+{% load omfilters %}
+
+<header class="main-header">
+    <div class="container d-flex align-items-center justify-content-between flex-wrap">
+        <a class="navbar-brand" href="{% url 'produto:lista' %}">
+            <img src="{% static 'logo.jpg' %}" alt="Logo Café Bela Esperança">
+        </a>
+
+        <div class="search-container">
+            <form class="search-wrapper" role="search" method="GET" action="{% url 'produto:busca' %}">
+                <input class="form-control search-input" type="search" name="termo" value="{{ request.GET.termo }}"
+                    placeholder="Buscar no Café Bela Esperança..." aria-label="Buscar">
+                <button class="btn search-button" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+
+        <div class="d-flex align-items-center header-icons">
+            {% if request.user.is_authenticated %}
+            <div class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="{% url 'pedido:lista' %}">Meus Pedidos</a></li>
+                    <li><a class="dropdown-item" href="{% url 'perfil:resumo' %}">Minha Conta</a></li>
+                    <li><a class="dropdown-item" href="{% url 'perfil:criar' %}">Atualizar Dados</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{% url 'perfil:logout' %}">Sair</a></li>
+                </ul>
+            </div>
+            {% else %}
+            <a class="nav-link" href="{% url 'perfil:criar' %}" title="Entrar ou Criar Conta">
+                <i class="fas fa-user-circle"></i>
+            </a>
+            {% endif %}
+
+            {% if request.session.carrinho %}
+            <a class="nav-link" href="{% url 'produto:carrinho' %}" title="Carrinho">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="badge rounded-pill">
+                    {{ request.session.carrinho|cart_total_qtd }}
+                </span>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<nav class="navbar navbar-expand-lg menu-navbar">
+    <div class="container justify-content-center">
+        <div class="navbar-nav">
+            <div class="nav-item dropdown" id="categorias-dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                    <i class="fas fa-th-list me-1"></i> Categorias
+                </a>
+                <div class="dropdown-menu dropdown-menu-categorias p-3" style="min-width: 450px;">
+                    <h6 class="dropdown-header">Filtre por categorias:</h6>
+                    <div class="dropdown-divider mb-3"></div>
+                    
+                    <form id="form-categorias" method="GET" action="{% url 'produto:lista' %}">
+                        <div class="categorias-grid">
+                            <div>
+                                <div class="categoria-grupo mb-3">
+                                    <h6 class="text-muted small fw-bold">ADUBOS E FERTILIZANTES</h6>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" value="AD" id="cat-AD" name="categorias"><label class="form-check-label" for="cat-AD">Adubos</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" value="AO" id="cat-AO" name="categorias"><label class="form-check-label" for="cat-AO">Adubos Organominerais</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" value="AE" id="cat-AE" name="categorias"><label class="form-check-label" for="cat-AE">Adubos Especiais</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" value="FF" id="cat-FF" name="categorias"><label class="form-check-label" for="cat-FF">Fertilizantes Foliares</label></div>
+                                </div>
+                                <div class="categoria-grupo mb-3">
+                                    <h6 class="text-muted small fw-bold">RAÇÕES</h6>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" value="RP" id="cat-RP" name="categorias"><label class="form-check-label" for="cat-RP">Rações Pet</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" value="RO" id="cat-RO" name="categorias"><label class="form-check-label" for="cat-RO">Rações Ovelhas</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" value="RS" id="cat-RS" name="categorias"><label class="form-check-label" for="cat-RS">Rações Suínos</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" value="RB" id="cat-RB" name="categorias"><label class="form-check-label" for="cat-RB">Rações para Bovinos</label></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="categoria-grupo mb-3">
+                                    <h6 class="text-muted small fw-bold">SEMENTES</h6>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" value="SM" id="cat-SM" name="categorias"><label class="form-check-label" for="cat-SM">Sementes de Milho</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" value="SS" id="cat-SS" name="categorias"><label class="form-check-label" for="cat-SS">Sementes de Soja</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" value="SP" id="cat-SP" name="categorias"><label class="form-check-label" for="cat-SP">Sementes de Pastagens</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" value="ST" id="cat-ST" name="categorias"><label class="form-check-label" for="cat-ST">Sementes de Trigo</label></div>
+                                </div>
+                                <div class="categoria-grupo">
+                                    <h6 class="text-muted small fw-bold">OUTROS</h6>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" value="MI" id="cat-MI" name="categorias"><label class="form-check-label" for="cat-MI">Máquinas e Implementos</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" value="M" id="cat-M" name="categorias"><label class="form-check-label" for="cat-M">Medicamentos</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" value="V" id="cat-V" name="categorias"><label class="form-check-label" for="cat-V">Vacinas</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" value="SM2" id="cat-SM2" name="categorias"><label class="form-check-label" for="cat-SM2">Sal Mineral</label></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dropdown-divider my-3"></div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="limparCategorias()"><i class="fas fa-times"></i> Limpar</button>
+                            <span class="badge bg-secondary" id="contador-categorias">0 selecionadas</span>
+                            <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-filter"></i> Filtrar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <a class="nav-link" href="{% url 'produto:lista' %}">Home</a>
+            <a class="nav-link" href="{% url 'produto:ofertas' %}">Ofertas</a>
+            <a class="nav-link" href="{% url 'produto:cupons' %}">Cupons</a>
+            <a class="nav-link" href="#">Link</a>
+        </div>
+    </div>
+</nav>
