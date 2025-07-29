@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block titulo %} Resumo do Usuário {% endblock %}
+{% block conteudo %}
+
+<div class="row">
+  <div class="col-lg mt-3">
+    <h4>Resumo da Conta</h4>
+    <p>Informações do seu perfil e dados cadastrais</p>
+    
+    {% if usuario %}
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Dados do Usuário</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Nome:</strong> {{ usuario.first_name }} {{ usuario.last_name }}</p>
+              <p><strong>Usuário:</strong> {{ usuario.username }}</p>
+              <p><strong>Email:</strong> {{ usuario.email }}</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Data de cadastro:</strong> {{ usuario.date_joined|date:"d/m/Y H:i" }}</p>
+              <p><strong>Último login:</strong> {{ usuario.last_login|date:"d/m/Y H:i" }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if perfil %}
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Dados do Perfil</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Idade:</strong> {{ perfil.idade }} anos</p>
+              <p><strong>Data de Nascimento:</strong> {{ perfil.data_nascimento|date:"d/m/Y" }}</p>
+              <p><strong>CPF:</strong> {{ perfil.cpf }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="alert alert-warning">
+        <strong>Atenção:</strong> Você ainda não completou seu perfil. 
+        <a href="{% url 'perfil:criar' %}" class="alert-link">Clique aqui para completar</a>
+      </div>
+    {% endif %}
+
+    {% if endereco %}
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Endereço</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Apelido:</strong> {{ endereco.apelido }}</p>
+              <p><strong>CEP:</strong> {{ endereco.cep }}</p>
+              <p><strong>Rua:</strong> {{ endereco.rua }}, {{ endereco.numero }}</p>
+              {% if endereco.complemento %}
+                <p><strong>Complemento:</strong> {{ endereco.complemento }}</p>
+              {% endif %}
+            </div>
+            <div class="col-md-6">
+              <p><strong>Bairro:</strong> {{ endereco.bairro }}</p>
+              <p><strong>Cidade:</strong> {{ endereco.cidade }}</p>
+              <p><strong>Estado:</strong> {{ endereco.estado }}</p>
+              <p><strong>País:</strong> {{ endereco.pais }}</p>
+              {% if endereco.principal %}
+                <p><span class="badge badge-success">Endereço Principal</span></p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="alert alert-warning">
+        <strong>Atenção:</strong> Você ainda não cadastrou um endereço. 
+        <a href="{% url 'perfil:criar' %}" class="alert-link">Clique aqui para cadastrar</a>
+      </div>
+    {% endif %}
+
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <a href="{% url 'perfil:criar' %}" class="btn btn-primary btn-block">
+          Atualizar Dados
+        </a>
+      </div>
+      <div class="col-md-6">
+        <a href="{% url 'perfil:logout' %}" class="btn btn-secondary btn-block">
+          Sair
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

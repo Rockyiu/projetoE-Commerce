@@ -1,0 +1,42 @@
+<!-- perfil/templates/perfil/resetar_senha_completo.html -->
+{% extends 'base.html' %}
+
+{% block titulo %}Senha Alterada{% endblock %}
+
+{% block conteudo %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                    
+                    <h2 class="card-title mb-3">Senha Alterada com Sucesso!</h2>
+                    
+                    <p class="card-text">
+                        Sua senha foi alterada com sucesso. Agora você pode fazer login 
+                        com sua nova senha.
+                    </p>
+                    
+                    <div class="alert alert-info mt-4">
+                        <i class="fas fa-lightbulb"></i>
+                        <strong>Dica:</strong> Guarde sua senha em um local seguro.
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'perfil:criar' %}" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Fazer Login
+                        </a>
+                        
+                        <a href="{% url 'produto:lista' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-home"></i> Página Inicial
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

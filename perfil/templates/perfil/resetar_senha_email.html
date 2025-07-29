@@ -1,0 +1,18 @@
+<!-- perfil/templates/perfil/resetar_senha_email.html -->
+Olá {{ user.get_full_name|default:user.username }},
+
+Você solicitou a recuperação de senha para sua conta no Café Bela Esperança.
+
+Para criar uma nova senha, clique no link abaixo:
+
+{{ protocol }}://{{ domain }}{% url 'perfil:password_reset_confirm' uidb64=uid token=token %}
+
+Se você não solicitou a recuperação de senha, pode ignorar este e-mail.
+
+O link é válido por 24 horas.
+
+Atenciosamente,
+Equipe Café Bela Esperança
+
+---
+Este é um e-mail automático, por favor não responda.

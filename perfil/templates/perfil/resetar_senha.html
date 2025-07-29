@@ -1,0 +1,61 @@
+
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block titulo %}Recuperar Senha{% endblock %}
+
+{% block conteudo %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">
+                        <i class="fas fa-key"></i> Recuperar Senha
+                    </h2>
+                    
+                    <p class="text-muted text-center mb-4">
+                        Esqueceu sua senha? Digite seu e-mail abaixo e enviaremos 
+                        instruções para criar uma nova senha.
+                    </p>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <label for="id_email">E-mail:</label>
+                            <input type="email" 
+                                   name="email" 
+                                   class="form-control" 
+                                   id="id_email" 
+                                   placeholder="Digite seu e-mail cadastrado"
+                                   required>
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.email.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Enviar E-mail de Recuperação
+                            </button>
+                            
+                            <a href="{% url 'perfil:criar' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Voltar ao Login
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="alert alert-info mt-3">
+                <i class="fas fa-info-circle"></i> 
+                <strong>Dica:</strong> Se você não receber o e-mail em alguns minutos, 
+                verifique sua pasta de spam ou lixo eletrônico.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

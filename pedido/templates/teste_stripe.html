@@ -1,0 +1,136 @@
+<!-- Crie um arquivo teste_stripe.html temporário com este conteúdo -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste Stripe</title>
+    <meta charset="utf-8">
+    <style>
+        #card-element {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 20px;
+            min-height: 40px;
+            background: white;
+        }
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Teste do Stripe</h2>
+        
+        <div id="card-element">
+            <!-- Elemento do cartão será inserido aqui -->
+        </div>
+        
+        <div id="card-errors" class="error"></div>
+        
+        <button onclick="testarToken()">Testar Token</button>
+        
+        <div id="debug-info" style="margin-top: 20px; padding: 10px; background: #f0f0f0;">
+            <h3>Debug Info:</h3>
+            <div id="debug-messages"></div>
+        </div>
+    </div>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        // Função para adicionar mensagens de debug
+        function addDebug(message) {
+            var debugDiv = document.getElementById('debug-messages');
+            debugDiv.innerHTML += '<p>' + new Date().toLocaleTimeString() + ': ' + message + '</p>';
+            console.log(message);
+        }
+
+        // Teste 1: Verificar se Stripe carregou
+        if (typeof Stripe === 'undefined') {
+            addDebug('ERRO: Stripe não carregou!');
+        } else {
+            addDebug('✓ Stripe carregado com sucesso');
+        }
+
+        try {
+            // Teste 2: Criar instância do Stripe
+            var stripe = Stripe('pk_test_51RnialRp7Fy2KietriOComyWcFYu9WMbvSoNlDTzLYdQp15riS9evSEzmm3OpYTDbRgMpRVMPFA4wHfnzL2FL6S000Llhgh8tA');
+            addDebug('✓ Stripe inicializado');
+
+            // Teste 3: Criar elements
+            var elements = stripe.elements();
+            addDebug('✓ Elements criado');
+
+            // Teste 4: Criar card element
+            var cardElement = elements.create('card', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        color: '#32325d',
+                        '::placeholder': {
+                            color: '#999'
+                        }
+                    }
+                }
+            });
+            addDebug('✓ Card element criado');
+
+            // Teste 5: Montar o elemento
+            cardElement.mount('#card-element');
+            addDebug('✓ Card element montado no DOM');
+
+            // Listener para mudanças
+            cardElement.on('change', function(event) {
+                var displayError = document.getElementById('card-errors');
+                if (event.error) {
+                    displayError.textContent = event.error.message;
+                    addDebug('Erro no cartão: ' + event.error.message);
+                } else {
+                    displayError.textContent = '';
+                    if (event.complete) {
+                        addDebug('✓ Cartão válido!');
+                    }
+                }
+            });
+
+            // Função para testar criação de token
+            window.testarToken = function() {
+                stripe.createToken(cardElement).then(function(result) {
+                    if (result.error) {
+                        addDebug('Erro ao criar token: ' + result.error.message);
+                    } else {
+                        addDebug('✓ Token criado: ' + result.token.id);
+                    }
+                });
+            }
+
+        } catch (error) {
+            addDebug('ERRO CRÍTICO: ' + error.message);
+            console.error(error);
+        }
+
+        // Verificar se o elemento foi realmente montado
+        setTimeout(function() {
+            var iframe = document.querySelector('#card-element iframe');
+            if (iframe) {
+                addDebug('✓ iFrame do Stripe detectado');
+            } else {
+                addDebug('⚠ iFrame do Stripe NÃO detectado');
+                
+                // Tentar montar novamente
+                addDebug('Tentando montar novamente...');
+                try {
+                    cardElement.mount('#card-element');
+                    addDebug('✓ Remontado com sucesso');
+                } catch (e) {
+                    addDebug('Erro ao remontar: ' + e.message);
+                }
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

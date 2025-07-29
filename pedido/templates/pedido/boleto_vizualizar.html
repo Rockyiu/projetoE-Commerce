@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load omfilters %}
+
+{% block titulo %}Visualizar Boleto - Pedido #{{ pedido.id }}{% endblock %}
+
+{% block conteudo %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">
+                        <i class="fas fa-barcode"></i> Visualizar Boleto Bancário
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Pedido #{{ pedido.id }}</h5>
+                            <p class="mb-1"><strong>Valor:</strong> {{ pedido.get_total_final_decimal|formata_preco }}</p>
+                            <p class="mb-1"><strong>Vencimento:</strong> Consulte o boleto</p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-clock"></i>
+                                <strong>Status:</strong> Aguardando pagamento
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Link para o Boleto -->
+                    <div class="mt-4 text-center">
+                        <a href="{{ boleto_url }}" target="_blank" class="btn btn-success">
+                            <i class="fas fa-eye"></i> Visualizar e Pagar Boleto
+                        </a>
+                    </div>
+
+                    <!-- Status -->
+                    <div id="status-message" class="alert alert-info mt-4">
+                        <i class="fas fa-spinner fa-spin"></i> 
+                        Aguardando confirmação do pagamento...
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-6">
+                            <a href="{% url 'pedido:lista' %}" class="btn btn-secondary">
+                                <i class="fas fa-list"></i> Voltar para a lista de produtos
+                            </a>
+                        </div>
+                        <div class="col-6 text-end">
+                            <button class="btn btn-outline-primary" onclick="window.print()">
+                                <i class="fas fa-print"></i> Imprimir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function verificarPagamento() {
+    const btn = document.querySelector('button[onclick="verificarPagamento()"]');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+
+    fetch("{% url 'pedido:verificar_status_pagamento' %}?payment_intent_id={{ pedido.payment_intent_id }}")
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'succeeded') {
+                clearInterval(checkPayment);
+                document.getElementById('status-message').innerHTML = 
+                    '<i class="fas fa-check-circle"></i> Pagamento confirmado! Redirecionando...';
+                document.getElementById('status-message').classList.remove('alert-info');
+                document.getElementById('status-message').classList.add('alert-success');
+
+                setTimeout(() => {
+                    window.location.href = "{% url 'pedido:detalhe' pedido.pk %}";
+                }, 2000);
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sync"></i> Verificar Pagamento';
+                document.getElementById('status-message').innerHTML = 
+                    '<i class="fas fa-info-circle"></i> Pagamento ainda não confirmado.';
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao verificar pagamento:', error);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-sync"></i> Verificar Pagamento';
+        });
+}
+
+// Verificação automática do status do pagamento
+const paymentIntentId = '{{ pedido.payment_intent_id }}';
+let checkCount = 0;
+
+const checkPayment = setInterval(() => {
+    verificarPagamento();
+    
+    checkCount++;
+    if (checkCount >= 60) { // Para após 5 minutos
+        clearInterval(checkPayment);
+    }
+}, 30000); // Verifica a cada 30 segundos
+</script>
+
+{% endblock %}

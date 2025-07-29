@@ -1,0 +1,99 @@
+<!-- perfil/templates/perfil/resetar_senha_confirmar.html -->
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block titulo %}Criar Nova Senha{% endblock %}
+
+{% block conteudo %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            {% if validlink %}
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h2 class="card-title text-center mb-4">
+                            <i class="fas fa-lock"></i> Criar Nova Senha
+                        </h2>
+                        
+                        <p class="text-muted text-center mb-4">
+                            Digite sua nova senha duas vezes para confirmação.
+                        </p>
+
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <div class="form-group mb-3">
+                                <label for="id_new_password1">Nova senha:</label>
+                                <input type="password" 
+                                       name="new_password1" 
+                                       class="form-control" 
+                                       id="id_new_password1"
+                                       required>
+                                {% if form.new_password1.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.new_password1.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <small class="form-text text-muted">
+                                    • Mínimo 8 caracteres<br>
+                                    • Pelo menos um número<br>
+                                    • Pelo menos um caractere especial (!@#$%^&*...)<br>
+                                    • Não pode ser muito similar às suas informações pessoais<br>
+                                    • Não pode ser uma senha comum
+                                </small>
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <label for="id_new_password2">Confirmar nova senha:</label>
+                                <input type="password" 
+                                       name="new_password2" 
+                                       class="form-control" 
+                                       id="id_new_password2"
+                                       required>
+                                {% if form.new_password2.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.new_password2.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Salvar Nova Senha
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card shadow">
+                    <div class="card-body text-center">
+                        <i class="fas fa-exclamation-circle fa-4x text-danger mb-3"></i>
+                        
+                        <h2 class="card-title mb-3">Link Inválido</h2>
+                        
+                        <p class="card-text">
+                            Este link de recuperação de senha é inválido ou já foi utilizado.
+                        </p>
+                        
+                        <p class="card-text text-muted">
+                            Links de recuperação de senha são válidos por apenas 24 horas e 
+                            podem ser usados apenas uma vez.
+                        </p>
+                        
+                        <hr>
+                        
+                        <a href="{% url 'perfil:resetar_senha' %}" class="btn btn-primary">
+                            <i class="fas fa-redo"></i> Solicitar Novo Link
+                        </a>
+                        
+                        <a href="{% url 'produto:lista' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-home"></i> Página Inicial
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
